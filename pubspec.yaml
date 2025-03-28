@@ -1,7 +1,7 @@
 name: flutter_jl_ota
 description: "Flutter JL OTA."
-version: 0.0.2
-homepage: "https://github.com/futurpals/flutter-JL-OTA"
+version: 0.0.4
+homepage: "https://github.com/futurpals/flutter_jl_ota"
 
 environment:
   sdk: ^3.7.2
