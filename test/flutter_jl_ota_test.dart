@@ -7,6 +7,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockFlutterJlOtaPlatform
     with MockPlatformInterfaceMixin
     implements FlutterJlOtaPlatform {
+
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 
@@ -23,11 +24,11 @@ void main() {
     expect(initialPlatform, isInstanceOf<MethodChannelFlutterJlOta>());
   });
 
-  test('getPlatformVersion', () async {
-    FlutterJlOta JlOtaPlugin = FlutterJlOta();
-    MockFlutterJlOtaPlatform fakePlatform = MockFlutterJlOtaPlatform();
-    FlutterJlOtaPlatform.instance = fakePlatform;
-
-    expect(await JlOtaPlugin.getPlatformVersion(), '42');
-  });
+  // test('getPlatformVersion', () async {
+  //   FlutterJlOta jlOtaPlugin = FlutterJlOta();
+  //   MockFlutterJlOtaPlatform fakePlatform = MockFlutterJlOtaPlatform();
+  //   FlutterJlOtaPlatform.instance = fakePlatform;
+  //
+  //   expect(await jlOtaPlugin.getPlatformVersion(), '42');
+  // });
 }

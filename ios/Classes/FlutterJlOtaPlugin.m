@@ -1,5 +1,5 @@
 #import "FlutterJlOtaPlugin.h"
-#import "SNOtaTool.h"
+#import "OtaTool.h"
 
 @interface FlutterJlOtaPlugin ()
 @property(nonatomic, strong) FlutterMethodChannel *channel;
@@ -19,23 +19,38 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-    } else if ([@"sn_updateFirmware" isEqualToString:call.method]) { // 固件升级
+    } else if ([@"startOtaUpdate" isEqualToString:call.method]) {
         NSDictionary *params = call.arguments;
         if ([params isKindOfClass:[NSDictionary class]]) {
             NSString *uuid = params[@"uuid"];
             NSString *filePath = params[@"filePath"];
-            if ([uuid isKindOfClass:[NSString class]] &&
-                [filePath isKindOfClass:[NSString class]]) {
-                [[SNOtaTool shareOtaTool] sn_initActionWithUuidString:uuid filePath:filePath];
+            if ([uuid isKindOfClass:[NSString class]] && [filePath isKindOfClass:[NSString class]]) {
+                [[OtaTool sharedInstance] startOtaWithUuid:uuid filePath:filePath];
 
                 __weak typeof(self) weakSelf = self;
-                [[SNOtaTool shareOtaTool] setSn_otaToolProgressCallBack:^(NSInteger progress) {
-
-                    // // 在这里处理进度值
-                    [weakSelf.channel invokeMethod:@"progress" arguments:@(progress)];
+                [[OtaTool sharedInstance] setOtaProgressCallback:^(NSInteger progress, NSString *status) {
+                    NSDictionary *response = @{
+                            @"progress": @(progress),
+                            @"status": status ?: @""
+                    };
+                    [weakSelf.channel invokeMethod:@"otaProgress" arguments:response];
                 }];
+
+                result(@YES); // 调用成功
+            } else {
+                result([FlutterError errorWithCode:@"INVALID_PARAMS"
+                                           message:@"UUID or filePath is invalid"
+                                           details:nil]);
             }
+        } else {
+            result([FlutterError errorWithCode:@"INVALID_ARGUMENTS"
+                                       message:@"Arguments must be a dictionary"
+                                       details:nil]);
         }
+    } else if ([@"cancelOtaUpdate" isEqualToString:call.method]) {
+        [[OtaTool sharedInstance] cancelOtaUpdate:^(uint8_t status) {
+            result(@(status == 0)); // 假设 status == 0 表示成功
+        }];
     } else {
         result(FlutterMethodNotImplemented);
     }
