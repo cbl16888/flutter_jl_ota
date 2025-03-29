@@ -16,4 +16,8 @@
 
 ## 0.0.5
 
-- IOS Upgrade Test Successful
+- Ios Upgrade Test Successful
+
+## 0.0.6
+
+- Fix Android Code
