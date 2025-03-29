@@ -34,88 +34,19 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    print("sn_log => ${'sn_testFirmwareUpgrade 执行了1'}");
-
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    // try {
-    //   platformVersion =
-    //       await _JlOtaPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    // } on PlatformException {
-    //   platformVersion = 'Failed to get platform version.';
-    // }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
-
     PermissionUtil.preRequestPermissions([
       Permission.location,
       Permission.bluetoothScan,
       Permission.bluetoothConnect,
       Permission.bluetoothAdvertise
     ], onAllowed: (result) async {});
-
-    // setState(() {
-    //   _platformVersion = platformVersion;
-    // });
   }
-
-  // void sn_testFirmwareUpgrade() async {
-  //   print("sn_log => ${'sn_testFirmwareUpgrade 执行了'}");
-  //
-  //   if (Platform.isIOS) {
-  //     try {
-  //       String testOTA = await sn_moveFileToLib();
-  //       _JlOtaPlugin.firmwareUpdate(
-  //           testOTA, "2B3681AF-B077-297D-D291-FA4A908CE06A", "TFY_BLE",
-  //           (int result) {
-  //         print("sn_log example 收到进度 ==>>> ${result}%");
-  //       });
-  //     } catch (e) {
-  //       print("firmwareUpdate e=> ${e}");
-  //     }
-  //   } else {
-  //     try {
-  //       String testOTA = await sn_moveFileToLib();
-  //       _JlOtaPlugin.firmwareUpdate(testOTA, "41:42:9F:D9:19:E5", "TFY_BLE",
-  //           (int result) {
-  //         print("!!!! test ==>>> ${result}%");
-  //       });
-  //     } catch (e) {
-  //       print("firmwareUpdate e=> ${e}");
-  //     }
-  //   }
-  // }
-
-  // /// 调试用
-  // static sn_moveFileToLib() async {
-  //   String _fileName = 'update.ufw';
-  //
-  //   String filePath = 'assets/${_fileName}';
-  //   final ByteData data = await rootBundle.load(filePath);
-  //   final List<int> bytes =
-  //       data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  //   String _filePath = await SNFilePathTool.sn_getFilePath(_fileName);
-  //   File file = File(_filePath);
-  //   await file.writeAsBytes(bytes);
-  //   print("该文件bytes大小为 ${bytes.length}");
-  //   return _filePath;
-  // }
 
   void startOta() async {
     String deviceUuid = '2B3681AF-B077-297D-D291-FA4A908CE06A'; // 替换为实际 UUID
     print("flutter_ota_log => ${'startOta 执行了'}");
     String ufwPath = await moveFileToLib();
-
-    // await OtaService.startScan();
-
-    // 2. 连接设备
-    // print('start connectDevice : $deviceUuid');
-    // await OtaService.connectDevice(deviceUuid);
-    // print('connect success: $deviceUuid');
     await OtaService.startOtaUpdate(deviceUuid, ufwPath);
 
     // 监听进度和状态

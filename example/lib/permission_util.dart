@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -6,10 +5,9 @@ typedef PermissionUtilOnAllowedCB = void Function(bool isAllow);
 
 class PermissionUtil {
   static void preRequestPermissions(
-      List<Permission> permissions, {
-
-        required PermissionUtilOnAllowedCB onAllowed,
-      }) async {
+    List<Permission> permissions, {
+    required PermissionUtilOnAllowedCB onAllowed,
+  }) async {
     if (await _checkAllPermissionsStatus(permissions)) {
       onAllowed(true);
     } else {
@@ -19,8 +17,6 @@ class PermissionUtil {
       // CommonToast.showToast("尚未授权的权限有：${permissions}.");
     }
   }
-
-
 
   // 权限名称映射
   static String _getPermissionName(Permission permission) {
@@ -51,7 +47,8 @@ class PermissionUtil {
   static Future new_requestPermissions(
       List<Permission> permissions, PermissionUtilOnAllowedCB onAllowed) async {
     var statuses = await permissions.request();
-    bool allPermissionsGranted = statuses.values.every((status) => status.isGranted);
+    bool allPermissionsGranted =
+        statuses.values.every((status) => status.isGranted);
 
     // 调用回调，通知调用方权限请求结果
     onAllowed(allPermissionsGranted);
@@ -59,7 +56,8 @@ class PermissionUtil {
     if (allPermissionsGranted) {
       print("通过的权限有：${permissions.map(_getPermissionName)}.");
     } else {
-      print("拒绝的权限有：${statuses.entries.where((entry) => !entry.value.isGranted).map((entry) => _getPermissionName(entry.key)).toList()}.");
+      print(
+          "拒绝的权限有：${statuses.entries.where((entry) => !entry.value.isGranted).map((entry) => _getPermissionName(entry.key)).toList()}.");
     }
   }
 

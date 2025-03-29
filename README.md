@@ -22,7 +22,7 @@ Integrated with the latest JL OTA plugin package
 
 ```yaml
 dependencies:
-  flutter_jl_ota: ^0.0.2
+  flutter_jl_ota: ^0.0.6
 ```
 
 ## Example

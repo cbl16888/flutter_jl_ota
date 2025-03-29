@@ -17,7 +17,9 @@ class OtaService {
   // 连接设备
   static Future<bool> connectDevice(String uuid) async {
     try {
-      final result = await _channel.invokeMethod('connectDevice', {'uuid': uuid});
+      final result = await _channel.invokeMethod('connectDevice', {
+        'uuid': uuid,
+      });
       return result == true;
     } catch (e) {
       print('Error connecting device: $e');
