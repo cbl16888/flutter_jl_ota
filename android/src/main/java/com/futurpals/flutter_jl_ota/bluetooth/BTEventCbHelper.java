@@ -4,8 +4,8 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.example.jl_ota.ble.model.BleScanInfo;
-import com.example.jl_ota.bluetooth.OnBTEventCallback;
+import com.futurpals.flutter_jl_ota.ble.model.BleScanInfo;
+import com.futurpals.flutter_jl_ota.bluetooth.OnBTEventCallback;
 
 
 import java.util.ArrayList;

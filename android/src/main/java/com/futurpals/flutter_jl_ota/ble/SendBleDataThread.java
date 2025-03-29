@@ -2,9 +2,9 @@ package com.futurpals.flutter_jl_ota.ble;
 
 import android.bluetooth.BluetoothGatt;
 
-import com.example.jl_ota.ble.interfaces.IBleOp;
-import com.example.jl_ota.ble.interfaces.OnThreadStateListener;
-import com.example.jl_ota.ble.interfaces.OnWriteDataCallback;
+import com.futurpals.flutter_jl_ota.ble.interfaces.IBleOp;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnThreadStateListener;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnWriteDataCallback;
 import com.jieli.jl_bt_ota.util.JL_Log;
 
 import java.util.Arrays;

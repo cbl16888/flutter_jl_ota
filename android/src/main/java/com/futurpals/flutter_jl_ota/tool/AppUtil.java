@@ -19,7 +19,7 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
-import com.example.jl_ota.JlOtaPlugin;
+import com.futurpals.flutter_jl_ota.FlutterJlOtaPlugin;
 import com.jieli.jl_bt_ota.constant.StateCode;
 import com.jieli.jl_bt_ota.util.BluetoothUtil;
 import com.jieli.jl_bt_ota.util.CHexConver;
@@ -234,7 +234,7 @@ public class AppUtil {
     }
 
     public static String printBtDeviceInfo(BluetoothDevice device) {
-        return BluetoothUtil.printBtDeviceInfo(JlOtaPlugin.getInstance().getContext(), device);
+        return BluetoothUtil.printBtDeviceInfo(FlutterJlOtaPlugin.getInstance().getContext(), device);
     }
 
     /**

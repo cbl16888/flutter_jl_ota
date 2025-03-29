@@ -6,8 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 
 
-import com.example.jl_ota.ble.interfaces.BleEventCallback;
-import com.example.jl_ota.ble.model.BleScanInfo;
+import com.futurpals.flutter_jl_ota.ble.interfaces.BleEventCallback;
+import com.futurpals.flutter_jl_ota.ble.model.BleScanInfo;
 
 import java.util.ArrayList;
 import java.util.List;

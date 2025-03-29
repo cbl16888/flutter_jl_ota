@@ -7,9 +7,9 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 
-import com.futurpals.jl_ota.ble.BleManager;
-import com.example.jl_ota.ble.interfaces.BleEventCallback;
-import com.example.jl_ota.ble.interfaces.OnWriteDataCallback;
+import com.futurpals.flutter_jl_ota.ble.BleManager;
+import com.futurpals.flutter_jl_ota.ble.interfaces.BleEventCallback;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnWriteDataCallback;
 import com.jieli.jl_bt_ota.constant.StateCode;
 import com.jieli.jl_bt_ota.impl.BluetoothOTAManager;
 import com.jieli.jl_bt_ota.util.BluetoothUtil;
@@ -149,18 +149,19 @@ class OtaManager extends BluetoothOTAManager {
     @Override
     public void connectBluetoothDevice(BluetoothDevice device) {
         //TODO:用户自行实现连接设备
-        if(bleManager.connectBleDevice(device)){
-            Log.e(TAG,"connectBluetoothDevice -> " + bleManager.connectBleDevice(device));
+        if (bleManager.connectBleDevice(device)) {
+            Log.e(TAG, "connectBluetoothDevice -> " + bleManager.connectBleDevice(device));
         }
         bleManager.connectBleDevice(device);
     }
 
-    public void reConnect(String address, boolean isUseAdv){
+    public void reConnect(String address, boolean isUseAdv) {
         // Step 0. 转换成目标地址，比如地址+1
 
-        bleManager.reconnectDevice(address,isUseAdv);
+        bleManager.reconnectDevice(address, isUseAdv);
 
     }
+
     /**
      * 断开蓝牙设备的连接
      *

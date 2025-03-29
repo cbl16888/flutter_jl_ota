@@ -1,7 +1,7 @@
 package com.futurpals.flutter_jl_ota.bluetooth;
 import android.bluetooth.BluetoothDevice;
 
-import com.example.jl_ota.ble.model.BleScanInfo;
+import com.futurpals.flutter_jl_ota.ble.model.BleScanInfo;
 
 import java.util.UUID;
 

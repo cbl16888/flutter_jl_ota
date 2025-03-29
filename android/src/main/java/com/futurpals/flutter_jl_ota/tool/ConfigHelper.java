@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.annotation.IntRange;
 
-import com.example.jl_ota.JlOtaPlugin;
+import com.futurpals.flutter_jl_ota.FlutterJlOtaPlugin;
 
 import io.flutter.Log;
 

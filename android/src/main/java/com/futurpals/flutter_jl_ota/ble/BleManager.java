@@ -30,17 +30,17 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.jl_ota.BleConnectedCallBack;
-import com.example.jl_ota.JlOtaPlugin;
+import com.futurpals.flutter_jl_ota.BleConnectedCallBack;
+import com.futurpals.flutter_jl_ota.FlutterJlOtaPlugin;
 
-import com.example.jl_ota.ReConnectHelper;
-import com.example.jl_ota.ble.interfaces.BleEventCallback;
-import com.example.jl_ota.ble.interfaces.OnWriteDataCallback;
-import com.example.jl_ota.ble.model.BleDevice;
-import com.example.jl_ota.ble.model.BleScanInfo;
-import com.example.jl_ota.tool.AppUtil;
+import com.futurpals.flutter_jl_ota.ReConnectHelper;
+import com.futurpals.flutter_jl_ota.ble.interfaces.BleEventCallback;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnWriteDataCallback;
+import com.futurpals.flutter_jl_ota.ble.model.BleDevice;
+import com.futurpals.flutter_jl_ota.ble.model.BleScanInfo;
+import com.futurpals.flutter_jl_ota.tool.AppUtil;
 //import com.example.jl_ota.tool.ConfigHelper;
-import com.example.jl_ota.tool.ConfigHelper;
+import com.futurpals.flutter_jl_ota.tool.ConfigHelper;
 import com.jieli.jl_bt_ota.constant.BluetoothConstant;
 import com.jieli.jl_bt_ota.util.BluetoothUtil;
 import com.jieli.jl_bt_ota.util.CHexConver;

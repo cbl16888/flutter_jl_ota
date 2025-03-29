@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattService;
 
 
-import com.example.jl_ota.ble.model.BleScanInfo;
+import com.futurpals.flutter_jl_ota.ble.model.BleScanInfo;
 
 import java.util.List;
 import java.util.UUID;

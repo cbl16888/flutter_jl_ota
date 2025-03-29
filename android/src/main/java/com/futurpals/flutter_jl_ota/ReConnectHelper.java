@@ -8,9 +8,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.example.jl_ota.ble.BleManager;
-import com.example.jl_ota.ble.interfaces.BleEventCallback;
-import com.example.jl_ota.ble.model.BleScanInfo;
+import com.futurpals.flutter_jl_ota.ble.BleManager;
+import com.futurpals.flutter_jl_ota.ble.interfaces.BleEventCallback;
+import com.futurpals.flutter_jl_ota.ble.model.BleScanInfo;
 import com.jieli.jl_bt_ota.constant.JL_Constant;
 import com.jieli.jl_bt_ota.model.BleScanMessage;
 import com.jieli.jl_bt_ota.tool.DeviceReConnectManager;

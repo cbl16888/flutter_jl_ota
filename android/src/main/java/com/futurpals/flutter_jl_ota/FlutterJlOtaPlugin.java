@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.futurpals.flutter_jl_ota.ble.BleManager;
 import com.futurpals.flutter_jl_ota.ble.interfaces.BleEventCallback;
-import com.futurpals.flutter_jl_ota.interfaces.OnWriteDataCallback;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnWriteDataCallback;
 import com.futurpals.flutter_jl_ota.tool.ConfigHelper;
 import com.jieli.jl_bt_ota.constant.ErrorCode;
 import com.jieli.jl_bt_ota.constant.StateCode;
@@ -58,16 +58,17 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
 
     public int connectedCounts = 0;
     public BluetoothDevice mDevice = null;
-public boolean canOtaButton = false;
-    public JlOtaPlugin() {
+    public boolean canOtaButton = false;
+
+    public FlutterJlOtaPlugin() {
     }
 
     public boolean isOtaRegister = false;
 
     // Get instance (Singleton)
-    public static synchronized JlOtaPlugin getInstance() {
+    public static synchronized FlutterJlOtaPlugin getInstance() {
         if (instance == null) {
-            instance = new JlOtaPlugin();
+            instance = new FlutterJlOtaPlugin();
         }
         return instance;
     }
@@ -127,11 +128,10 @@ public boolean canOtaButton = false;
             String remoteID = call.argument("uuid");
             String deviceName = call.argument("deviceName");
             otaFilePath = call.argument("filePath");
-            Log.e("flutter传输","数据 from flutter => remoteID="+remoteID+",deviceName="+deviceName+",otaFilePath="+otaFilePath);
+            Log.e("flutter传输", "数据 from flutter => remoteID=" + remoteID + ",deviceName=" + deviceName + ",otaFilePath=" + otaFilePath);
             initState(remoteID, deviceName);
 
-        }
-        else {
+        } else {
             result.notImplemented();
         }
     }
@@ -175,19 +175,19 @@ public boolean canOtaButton = false;
             @Override
             public void onCanStartOtaChanged(boolean canStartOta) {
                 if (canStartOta) {
-                    if(isOtaRegister) {
+                    if (isOtaRegister) {
 //                        Log.e(TAG,"重复 onCanStartOtaChanged"); 实际上没重复
                         return;
                     }
-                    isOtaRegister=true;
+                    isOtaRegister = true;
                     otaManager.registerBluetoothCallback(new BtEventCallback() {
                         @Override
                         public void onError(BaseError baseError) {
-                            Log.e("registerBluetoothCallback", "error -> " + baseError);
+                            Log.e("rbc", "error -> " + baseError);
                             int code = baseError.getCode();
                             if (code == 0) {
 //                                otaManager.release();
-                                isOtaRegister=false;
+                                isOtaRegister = false;
                             }
                         }
 
@@ -199,9 +199,9 @@ public boolean canOtaButton = false;
                             if (status == StateCode.CONNECTION_OK) {
                                 if (otaManager.isOTA()) return; //如果已经在OTA流程，则不需要处理
                                 Log.e(TAG, "start-> ota:" + device + ",status==" + status);
-                                canOtaButton =true;
+                                canOtaButton = true;
 //                                OtaFirmware();
-                                if(connectedCounts>=2){
+                                if (connectedCounts >= 2) {
                                     OtaFirmware();
                                 }
 
@@ -210,7 +210,7 @@ public boolean canOtaButton = false;
                                     @Override
                                     public void onSuccess(TargetInfoResponse deviceInfo) {
 
-                                        Log.e("queryMandatoryUpdate","强制升级 onSuccess");
+                                        Log.e("queryMandatoryUpdate", "强制升级 onSuccess");
 
 //                                        OtaFirmware();
                                         //进行步骤2
@@ -218,7 +218,7 @@ public boolean canOtaButton = false;
 
                                     @Override
                                     public void onError(BaseError baseError) {
-                                        Log.e("queryMandatoryUpdate","强制升级error->"+baseError);
+                                        Log.e("queryMandatoryUpdate", "强制升级error->" + baseError);
 
                                     }
                                 });
@@ -242,7 +242,7 @@ public boolean canOtaButton = false;
         otaManager.startOTA(new IUpgradeCallback() {
             @Override
             public void onStartOTA() {
-                connectedCounts=0;
+                connectedCounts = 0;
                 Log.e(TAG, "onStartOTA");
                 //回调开始OTA
             }
@@ -252,32 +252,32 @@ public boolean canOtaButton = false;
 
                 //如果客户设置了BluetoothOTAConfigure#setUseReconnect()为true，则需要在此处回调进行自定义回连设备流程
                 if (otaManager.getBluetoothOption().isUseReconnect()) {
-                    Log.e(TAG, "onNeedReconnect addr="+addr+",isNewReconnectWay="+isNewReconnectWay);
+                    Log.e(TAG, "onNeedReconnect addr=" + addr + ",isNewReconnectWay=" + isNewReconnectWay);
 
 //                    //2-1 进行自定义回连流程
-                    otaManager.reConnect(addr,isNewReconnectWay);
+                    otaManager.reConnect(addr, isNewReconnectWay);
                 }
             }
 
             @Override
             public void onProgress(int type, float progress) {
-                Log.e(TAG, "升级进度 type="+type+",progress"+progress);
+                Log.e(TAG, "升级进度 type=" + type + ",progress" + progress);
                 int progressInt = (int) progress;
                 if (type == 0) {
 
-                if (activity != null)
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (send_channel != null) {
-                                send_channel.invokeMethod("progress", progressInt);
-                                Log.e(TAG, "原生升级进度:" + progressInt);
-                            } else {
-                                Log.e("channel", "channel null" + send_channel);
-                            }
+                    if (activity != null)
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (send_channel != null) {
+                                    send_channel.invokeMethod("progress", progressInt);
+                                    Log.e(TAG, "原生升级进度:" + progressInt);
+                                } else {
+                                    Log.e("channel", "channel null" + send_channel);
+                                }
 
-                        }
-                    });
+                            }
+                        });
                 }
                 //回调OTA进度
                 //type : 0 --- 下载loader  1 --- 升级固件
@@ -314,7 +314,6 @@ public boolean canOtaButton = false;
 //        otaManager.unregisterBluetoothCallback(this);
 //        otaManager.release();
     }
-
 
 
     @SuppressLint("MissingPermission")

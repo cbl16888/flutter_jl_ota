@@ -8,11 +8,11 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.example.jl_ota.ble.SendBleDataThread;
-import com.example.jl_ota.ble.interfaces.IBleOp;
-import com.example.jl_ota.ble.interfaces.OnThreadStateListener;
-import com.example.jl_ota.ble.interfaces.OnWriteDataCallback;
-import com.example.jl_ota.tool.AppUtil;
+import com.futurpals.flutter_jl_ota.ble.SendBleDataThread;
+import com.futurpals.flutter_jl_ota.ble.interfaces.IBleOp;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnThreadStateListener;
+import com.futurpals.flutter_jl_ota.ble.interfaces.OnWriteDataCallback;
+import com.futurpals.flutter_jl_ota.tool.AppUtil;
 import com.jieli.jl_bt_ota.constant.BluetoothConstant;
 import com.jieli.jl_bt_ota.util.CHexConver;
 import com.jieli.jl_bt_ota.util.JL_Log;
