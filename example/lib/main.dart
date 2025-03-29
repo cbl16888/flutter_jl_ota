@@ -106,16 +106,23 @@ class _MyAppState extends State<MyApp> {
   // }
 
   void startOta() async {
+    String deviceUuid = '2B3681AF-B077-297D-D291-FA4A908CE06A'; // 替换为实际 UUID
     print("flutter_ota_log => ${'startOta 执行了'}");
     String ufwPath = await moveFileToLib();
-    OtaService.startOtaUpdate(
-      "2B3681AF-B077-297D-D291-FA4A908CE06A", // 替换为实际设备 UUID
-      ufwPath, // 替换为实际固件路径
-    ).then((success) {
-      if (success) {
-        print('OTA update started successfully');
-      } else {
-        print('Failed to start OTA update');
+
+    // await OtaService.startScan();
+
+    // 2. 连接设备
+    // print('start connectDevice : $deviceUuid');
+    // await OtaService.connectDevice(deviceUuid);
+    // print('connect success: $deviceUuid');
+    await OtaService.startOtaUpdate(deviceUuid, ufwPath);
+
+    // 监听进度和状态
+    OtaService.listenToOtaProgress((progress, status) {
+      print('OTA Progress: $progress%, Status: $status');
+      if (status == 'Failed' || status == 'Success') {
+        // 可选择取消监听或执行其他逻辑
       }
     });
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 
-import 'flutter_jl_ota_platform_interface.dart';
 import 'ota_service.dart';
 
 class FlutterJlOta {
@@ -8,29 +7,33 @@ class FlutterJlOta {
   //   return FlutterJlOtaPlatform.instance.getPlatformVersion();
   // }
 
-  /// 固件升级
-  void startOta(
-    String filePath,
-    String uuid,
-    String deviceName,
-    Function(int result) callBack, {
-    Map? otherParams,
-  }) async {
-    OtaService.startOtaUpdate(
-      uuid, // 替换为实际设备 UUID
-      filePath, // 替换为实际固件路径
-    ).then((success) {
-      if (success) {
-        print('OTA update started successfully');
-      } else {
-        print('Failed to start OTA update');
-      }
-    });
+  // 开始扫描设备
+  Future<bool> startScan() async {
+    return OtaService.startScan();
   }
 
-  void listenToOtaProgress() async {
-    OtaService.listenToOtaProgress((progress, status) {
-      print('OTA Progress: $progress%, Status: $status');
-    });
+  // 连接设备
+  static Future<bool> connectDevice(String uuid) async {
+    return OtaService.connectDevice(uuid);
+  }
+
+  // 获取设备信息
+  static Future<bool> getDeviceInfo() async {
+    return OtaService.getDeviceInfo();
+  }
+
+  // 开始 OTA 升级
+  static Future<bool> startOtaUpdate(String uuid, String filePath) async {
+    return OtaService.startOtaUpdate(uuid, filePath);
+  }
+
+  // 取消 OTA 升级
+  static Future<bool> cancelOtaUpdate() async {
+    return OtaService.cancelOtaUpdate();
+  }
+
+  // 监听 OTA 进度和状态
+  static void listenToOtaProgress(Function(int, String) onProgress) {
+    OtaService.listenToOtaProgress(onProgress);
   }
 }

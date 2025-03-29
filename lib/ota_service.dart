@@ -3,6 +3,39 @@ import 'package:flutter/services.dart';
 class OtaService {
   static const MethodChannel _channel = MethodChannel('flutter_jl_ota');
 
+  // 开始扫描设备
+  static Future<bool> startScan() async {
+    try {
+      final result = await _channel.invokeMethod('startScan');
+      return result == true;
+    } catch (e) {
+      print('Error starting scan: $e');
+      return false;
+    }
+  }
+
+  // 连接设备
+  static Future<bool> connectDevice(String uuid) async {
+    try {
+      final result = await _channel.invokeMethod('connectDevice', {'uuid': uuid});
+      return result == true;
+    } catch (e) {
+      print('Error connecting device: $e');
+      return false;
+    }
+  }
+
+  // 获取设备信息
+  static Future<bool> getDeviceInfo() async {
+    try {
+      final result = await _channel.invokeMethod('getDeviceInfo');
+      return result == true;
+    } catch (e) {
+      print('Error getting device info: $e');
+      return false;
+    }
+  }
+
   // 开始 OTA 升级
   static Future<bool> startOtaUpdate(String uuid, String filePath) async {
     try {

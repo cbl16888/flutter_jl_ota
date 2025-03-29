@@ -9,9 +9,9 @@ static OtaTool *sharedInstance = nil;
 
 @interface OtaTool () <JLBleManagerOtaDelegate>
 
-@property (nonatomic, copy) NSString *uuid;
-@property (nonatomic, copy) NSString *filePath;
-@property (nonatomic, copy) void (^otaProgressCallback)(NSInteger progress, NSString *status);
+@property(nonatomic, copy) NSString *uuid;
+@property(nonatomic, copy) NSString *filePath;
+@property(nonatomic, copy) void (^otaProgressCallback)(NSInteger progress, NSString *status);
 
 @end
 
@@ -46,6 +46,25 @@ static OtaTool *sharedInstance = nil;
 
 #pragma mark - 公共方法
 
+- (void)startScan {
+    [[JLBleManager sharedInstance] startScanBLE];
+}
+
+- (void)connectDeviceWithUUID:(NSString *)uuid {
+    self.uuid = uuid;
+    [[JLBleManager sharedInstance] connectPeripheralWithUUID:uuid];
+}
+
+- (void)getDeviceInfo:(void (^)(BOOL needForcedUpgrade))callback {
+    NSLog(@"JLBleManager isConnected: %d", [[JLBleManager sharedInstance] isConnected]);
+    [[JLBleManager sharedInstance] getDeviceInfo:^(BOOL needForcedUpgrade) {
+        NSLog(@"needForcedUpgrade : %d", needForcedUpgrade);
+        if (callback) {
+            callback(needForcedUpgrade);
+        }
+    }];
+}
+
 - (void)startOtaWithUuid:(NSString *)uuid filePath:(NSString *)filePath {
     self.uuid = uuid;
     self.filePath = filePath;
@@ -53,7 +72,7 @@ static OtaTool *sharedInstance = nil;
     if (![[JLBleManager sharedInstance] isConnected]) {
         [[JLBleManager sharedInstance] connectPeripheralWithUUID:uuid];
     } else {
-        [self startOtaProcess];
+        [self checkDeviceAndStartOta];
     }
 }
 
@@ -68,7 +87,9 @@ static OtaTool *sharedInstance = nil;
     }];
 }
 
-- (void)setOtaProgressCallback:(void (^)(NSInteger, NSString *))callback {
+- (void)setOtaProgressCallback:(void (^)(NSInteger, NSString
+
+*))callback {
     _otaProgressCallback = [callback copy];
 }
 
@@ -91,13 +112,13 @@ static OtaTool *sharedInstance = nil;
 
 - (void)handleBleConnected:(NSNotification *)notification {
     if ([[JLBleManager sharedInstance] isConnected] && self.filePath) {
-        [self startOtaProcess];
+        [self checkDeviceAndStartOta];
     }
 }
 
 - (void)handleBlePaired:(NSNotification *)notification {
     if ([[JLBleManager sharedInstance] isConnected] && self.filePath) {
-        [self startOtaProcess];
+        [self checkDeviceAndStartOta];
     }
 }
 
@@ -107,8 +128,11 @@ static OtaTool *sharedInstance = nil;
     }
 }
 
-- (void)startOtaProcess {
-    [[JLBleManager sharedInstance] otaFuncWithFilePath:self.filePath];
+- (void)checkDeviceAndStartOta {
+    [[JLBleManager sharedInstance] getDeviceInfo:^(BOOL needForcedUpgrade) {
+        NSLog(@"needForcedUpgrade : %d", needForcedUpgrade);
+        [[JLBleManager sharedInstance] otaFuncWithFilePath:self.filePath];
+    }];
 }
 
 - (void)dealloc {
@@ -121,7 +145,7 @@ static OtaTool *sharedInstance = nil;
 - (void)otaProgressWithOtaResult:(JL_OTAResult)result withProgress:(float)progress {
     if (self.otaProgressCallback) {
         NSInteger intProgress = (NSInteger)(progress * 100);
-        NSString *status = [self statusStringForResult:result];
+        NSString * stat  us = [self statusStringForResult:result];
 
         switch (result) {
             case JL_OTAResultPreparing:
@@ -129,14 +153,20 @@ static OtaTool *sharedInstance = nil;
                 intProgress = MIN(intProgress, 99);
                 break;
             case JL_OTAResultSuccess:
+                NSLog(@"--->升级成功.");
                 intProgress = 100;
+                break;
+            case JL_OTAResultPrepared:
+                NSLog(@"---> 检验文件【完成】");
                 break;
             case JL_OTAResultReconnect:
                 [[JLBleManager sharedInstance] connectPeripheralWithUUID:self.uuid];
                 break;
             case JL_OTAResultReconnectWithMacAddr:
-                // 如果需要支持 Mac 地址回连，需额外实现逻辑
-                NSLog(@"Reconnect with Mac Address not implemented");
+                [self handleReconnectByMac];
+                break;
+            case JL_OTAResultReboot:
+                NSLog(@"--->设备重启.");
                 break;
             case JL_OTAResultFail:
             case JL_OTAResultFailCmdTimeout:
@@ -149,18 +179,37 @@ static OtaTool *sharedInstance = nil;
     }
 }
 
+
+- (void)handleReconnectByMac {
+    JLBleManager *model = [JLBleManager sharedInstance];
+    NSLog(@"---> OTA正在通过Mac Addr方式回连设备... %@",
+          model.otaManager.bleAddr);
+    [JLBleManager sharedInstance].lastBleMacAddress = model.otaManager.bleAddr;
+    [[JLBleManager sharedInstance] startScanBLE];
+}
+
 - (NSString *)statusStringForResult:(JL_OTAResult)result {
     switch (result) {
-        case JL_OTAResultPreparing: return @"Preparing";
-        case JL_OTAResultUpgrading: return @"Upgrading";
-        case JL_OTAResultPrepared: return @"Prepared";
-        case JL_OTAResultReconnect: return @"Reconnecting";
-        case JL_OTAResultReconnectWithMacAddr: return @"ReconnectingWithMac";
-        case JL_OTAResultSuccess: return @"Success";
-        case JL_OTAResultFail: return @"Failed";
-        case JL_OTAResultReboot: return @"Rebooting";
-        case JL_OTAResultFailCmdTimeout: return @"Timeout";
-        default: return @"Unknown";
+        case JL_OTAResultPreparing:
+            return @"Preparing";
+        case JL_OTAResultUpgrading:
+            return @"Upgrading";
+        case JL_OTAResultPrepared:
+            return @"Prepared";
+        case JL_OTAResultReconnect:
+            return @"Reconnecting";
+        case JL_OTAResultReconnectWithMacAddr:
+            return @"ReconnectingWithMac";
+        case JL_OTAResultSuccess:
+            return @"Success";
+        case JL_OTAResultFail:
+            return @"Failed";
+        case JL_OTAResultReboot:
+            return @"Rebooting";
+        case JL_OTAResultFailCmdTimeout:
+            return @"Timeout";
+        default:
+            return @"Unknown";
     }
 }
 
