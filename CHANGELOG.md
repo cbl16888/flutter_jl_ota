@@ -13,3 +13,7 @@
 ## 0.0.4
 
 - Fix Invoke error
+
+## 0.0.5
+
+- IOS Upgrade Test Successful
