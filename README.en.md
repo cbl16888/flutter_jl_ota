@@ -5,40 +5,40 @@
 [![Chinese](https://img.shields.io/badge/Language-Chinese-blueviolet?style=for-the-badge)](README.md)
 [![English](https://img.shields.io/badge/Language-English-blueviolet?style=for-the-badge)](README.en.md)
 
-# Flutter 杰理OTA插件
+# JL OTA Update Plugin for Flutter
 
+A Flutter plugin for OTA firmware updates targeting JL (JieLi) chipsets. Supports
+Android and iOS platforms with progress callbacks and error handling.
 
-针对JL（杰理）芯片的OTA固件更新的Flutter插件。支持带有进度回调和错误处理的Android和iOS平台，支持和flutter_blue_plus混用。
-
-|          | Android | iOS   |
-|----------|---------|-------|
-| **版本支持** | SDK 21+ | 12.0+ |
+|             | Android | iOS   |
+|-------------|---------|-------|
+| **Support** | SDK 21+ | 12.0+ |
 
 ---
 
-## 安装
+## Setup
 
-与最新的JL OTA插件包集成
+Integrated with the latest JL OTA plugin package
 
-* 安卓 SDK V1.9.2
+* Android SDK V1.9.2
 * IOS SDK V2.3.1
 
-[Android杰理官方github仓库地址](https://github.com/Jieli-Tech/Android-JL_OTA)
-[IOS杰理官方github仓库地址](https://github.com/Jieli-Tech/iOS-JL_OTA)
+[Jieli OTA Android Official GitHub repository](https://github.com/Jieli-Tech/Android-JL_OTA)
+[Jieli OTA IOS Official GitHub repository](https://github.com/Jieli-Tech/iOS-JL_OTA)
 
 ---
 
-## 下载
+## Installation
 
 ```yaml
 dependencies:
   flutter_jl_ota: ^0.0.7
 ```
 
-## 例子
+## Example
 
-* 将您的UFW固件放置在assets目录中
-* 用您的实际设备Uuid替换设备Uuid
+* Place your UFW firmware in the assets directory
+* Replace the device Uuid with your actual device Uuid
 
 <?code-excerpt "basic.dart (basic-example)"?>
 
