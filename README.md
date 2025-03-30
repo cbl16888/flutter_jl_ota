@@ -1,5 +1,3 @@
-<div align="center">
-
 **Languages:**
 
 [![Chinese](https://img.shields.io/badge/Language-Chinese-blueviolet?style=for-the-badge)](README.md)
@@ -32,7 +30,7 @@
 
 ```yaml
 dependencies:
-  flutter_jl_ota: ^0.0.7
+  flutter_jl_ota: ^0.0.8
 ```
 
 ## 例子
