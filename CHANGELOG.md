@@ -29,3 +29,7 @@
 ## 0.0.8
 
 - Update README.md
+
+## 0.0.9
+
+- Fix Android Code
