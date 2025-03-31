@@ -45,6 +45,9 @@ class _MyAppState extends State<MyApp> {
 
   void startOta() async {
     String deviceUuid = '2B3681AF-B077-297D-D291-FA4A908CE06A'; // 替换为实际 UUID
+    if (Platform.isAndroid) {
+      deviceUuid = "C9:EB:4B:A8:52:92";
+    }
     print("flutter_ota_log => ${'startOta 执行了'}");
     String ufwPath = await moveFileToLib();
     await OtaService.startOtaUpdate(deviceUuid, ufwPath);

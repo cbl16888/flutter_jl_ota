@@ -31,7 +31,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.futurpals.flutter_jl_ota.BleConnectedCallBack;
-import com.futurpals.flutter_jl_ota.FlutterJlOtaPlugin;
 
 import com.futurpals.flutter_jl_ota.ReConnectHelper;
 import com.futurpals.flutter_jl_ota.ble.interfaces.BleEventCallback;
@@ -44,7 +43,6 @@ import com.futurpals.flutter_jl_ota.tool.ConfigHelper;
 import com.jieli.jl_bt_ota.constant.BluetoothConstant;
 import com.jieli.jl_bt_ota.util.BluetoothUtil;
 import com.jieli.jl_bt_ota.util.CHexConver;
-import com.jieli.jl_bt_ota.util.CommonUtil;
 import com.jieli.jl_bt_ota.util.JL_Log;
 
 
@@ -55,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-
 
 
 /**
@@ -70,8 +67,9 @@ public class BleManager {
     @SuppressLint("StaticFieldLeak")
     private volatile static BleManager instance;
     private final ConfigHelper configHelper = ConfigHelper.getInstance();
+
     // 获取BleManager实例，传递Context
-    public static BleManager getInstance(Context context,String m_mac, String d_deviceName) {
+    public static BleManager getInstance(Context context, String m_mac, String d_deviceName) {
         if (instance == null) {
             synchronized (BleManager.class) {
                 if (instance == null) {
@@ -79,7 +77,7 @@ public class BleManager {
                     if (context == null) {
                         throw new IllegalStateException("Context is required to initialize BleManager");
                     }
-                    instance = new BleManager(context.getApplicationContext(),m_mac,d_deviceName); // 使用Application Context
+                    instance = new BleManager(context.getApplicationContext(), m_mac, d_deviceName); // 使用Application Context
                     JL_Log.w(TAG, "init BleManager.. " + instance);
 
                 }
@@ -87,21 +85,23 @@ public class BleManager {
         }
         return instance;
     }
-public String mac = "";
+
+    public String mac = "";
     public String deviceName = "";
-    public BleManager(Context context,String m_mac,String d_deviceNmae) {
+
+    public BleManager(Context context, String m_mac, String d_deviceNmae) {
 
         this.mContext = context;
         if (context == null) {
             throw new IllegalArgumentException("Context cannot be null");
         }
-        this.mac=m_mac;
-        this.deviceName=d_deviceNmae;
+        this.mac = m_mac;
+        this.deviceName = d_deviceNmae;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (Build.VERSION.SDK_INT >= LOLLIPOP && mBluetoothAdapter != null) {
             mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-            Log.e(TAG,"mBluetoothLeScanner=="+mBluetoothLeScanner);
+            Log.e(TAG, "mBluetoothLeScanner==" + mBluetoothLeScanner);
 
         }
         mReConnectHelper = new ReConnectHelper(context, this);
@@ -233,11 +233,13 @@ public String mac = "";
             return false;
         }
     });
+
     public void reconnectDevice(String address, boolean isUseAdv) {
         JL_Log.d(TAG, "reconnectDevice : address = " + address + ", isUseAdv = " + isUseAdv);
         boolean ret = mReConnectHelper.putParam(new ReConnectHelper.ReconnectParam(address, isUseAdv));
         JL_Log.d(TAG, "reconnectDevice : ret = " + ret);
     }
+
     /**
      * 获取已连接的BLE设备列表
      *
@@ -286,6 +288,7 @@ public String mac = "";
     public boolean isBleScanning() {
         return isBleScanning;
     }
+
     // 获取已连接的BLE设备
     @SuppressLint("MissingPermission")
     private List<BluetoothDevice> getConnectedBleDevices() {
@@ -297,12 +300,13 @@ public String mac = "";
         }
         return null;
     }
+
     @SuppressLint("MissingPermission")
     public boolean startLeScan(long timeout) {
         String TAG = "startLeScan";
-        Log.e(TAG,"null == mBluetoothAdapter");
+        Log.e(TAG, "null == mBluetoothAdapter");
         if (null == mBluetoothAdapter || !AppUtil.checkHasScanPermission(mContext)) return false;
-        Log.e(TAG,"isBluetooth disEnable");
+        Log.e(TAG, "isBluetooth disEnable");
 
         if (!isBluetoothEnable() || !AppUtil.isHasLocationPermission(mContext)) return false;
         if (timeout <= 0) timeout = SCAN_BLE_TIMEOUT;
@@ -345,7 +349,7 @@ public String mac = "";
                         .build();
             }
             mBluetoothLeScanner.startScan(null, scanSettings, mScanCallback);
-            Log.e(TAG,"mDiscoveredBleDevices +"+ mDiscoveredBleDevices);
+            Log.e(TAG, "mDiscoveredBleDevices +" + mDiscoveredBleDevices);
             ret = true;
         } else {
             ret = mBluetoothAdapter.startLeScan(mLeScanCallback);
@@ -383,6 +387,7 @@ public String mac = "";
 
         return targetDevice;
     }
+
     @SuppressLint("MissingPermission")
     public void stopLeScan() {
         if (null == mBluetoothAdapter || !isBluetoothEnable() || !AppUtil.checkHasScanPermission(mContext))
@@ -444,8 +449,6 @@ public String mac = "";
     }
 
 
-
-
     public int getBleMtu(BluetoothDevice device) {
         BleDevice bleDevice = getConnectedBle(device);
         if (null == bleDevice) return 0;
@@ -479,14 +482,14 @@ public String mac = "";
 
     @SuppressLint("MissingPermission")
     public boolean connectBleDevice(BluetoothDevice device) {
-Log.e(TAG,"重连 1");
+        Log.e(TAG, "重连 1");
 
-        if(isConnected)return true;
-        Log.e(TAG,"重连 2");
+//        if (isConnected) return true;
+        Log.e(TAG, "重连 2");
 
         //TODO 连接设备的方法
         if (null == device || !AppUtil.checkHasConnectPermission(mContext)) return false;
-        Log.e(TAG,"重连 3");
+        Log.e(TAG, "重连 3");
 
        /* if (mUsingDevice != null) {
             JL_Log.e(TAG, "BleDevice is connected, please call disconnectBleDevice method at first.");
@@ -497,12 +500,12 @@ Log.e(TAG,"重连 1");
             JL_Log.e(TAG, "BleDevice is connecting, please wait.");
             return isConnectingDevice(device);
         }
-        Log.e(TAG,"重连 4");
+        Log.e(TAG, "重连 4");
 
         if (isBleScanning()) {
             stopLeScan();
         }
-        Log.e(TAG,"重连 5");
+        Log.e(TAG, "重连 5");
 
         BluetoothGatt gatt = null;
         try {
@@ -514,7 +517,7 @@ Log.e(TAG,"重连 1");
                         mBluetoothGattCallback,
                         BluetoothDevice.TRANSPORT_LE
                 );
-                Log.e(TAG,"gatt ==" +gatt);
+                Log.e(TAG, "gatt ==" + gatt);
             } else {
 //                Log.e(TAG,"connectBleDevice2");
 
@@ -525,10 +528,10 @@ Log.e(TAG,"重连 1");
                 );
             }
         } catch (Exception e) {
-            Log.e(TAG,"gatt 连接异常 +" +e);
+            Log.e(TAG, "gatt 连接异常 +" + e);
 //            e.printStackTrace();
         }
-        Log.e(TAG,"重连 6");
+        Log.e(TAG, "重连 6");
 
         boolean ret = gatt != null;
         if (ret) {
@@ -637,6 +640,7 @@ Log.e(TAG,"重连 1");
             mConnectedGattMap.clear();
         }
     }
+
     private void startConnectTimeout(BluetoothDevice device) {
         if (!mHandler.hasMessages(MSG_CONNECT_BLE_TIMEOUT)) {
             mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_CONNECT_BLE_TIMEOUT, device), CONNECT_BLE_TIMEOUT);
@@ -648,6 +652,7 @@ Log.e(TAG,"重连 1");
             mHandler.removeMessages(MSG_CONNECT_BLE_TIMEOUT);
         }
     }
+
     private void setConnectingBtDevice(BluetoothDevice mConnectingBtDevice) {
         this.mConnectingBtDevice = mConnectingBtDevice;
     }
@@ -661,15 +666,15 @@ Log.e(TAG,"重连 1");
     private void filterDevice(BluetoothDevice device, int rssi, byte[] scanRecord,
                               boolean isBleEnableConnect) {
 
-        String TAGG= "filterDevice";
+        String TAGG = "filterDevice";
 //        Log.e(TAGG," 1 "+device+",2 "+rssi+", 3 "+scanRecord );
         if (AppUtil.checkHasConnectPermission(mContext) && isBluetoothEnable() && !TextUtils.isEmpty(device.getName())
                 && !mDiscoveredBleDevices.contains(device)) {
             JL_Log.d(TAG, "notify device : " + printDeviceInfo(device));
-            if(device.getAddress().equalsIgnoreCase(mac)){
-                Log.e(TAGG,"发现指定设备，进行连接！");
-                if(connectBleDevice(device)){
-                    isConnected=false;
+            if (device.getAddress().equalsIgnoreCase(mac)) {
+                Log.e(TAGG, "发现指定设备，进行连接！");
+                if (connectBleDevice(device)) {
+                    isConnected = false;
                 }
                 connectBleDevice(device);
             }
@@ -677,8 +682,6 @@ Log.e(TAG,"重连 1");
             handleDiscoveryBle(device, new BleScanInfo().setRawData(scanRecord).setRssi(rssi).setEnableConnect(isBleEnableConnect));
         }
     }
-
-
 
 
     private void syncSystemBleDevice() {
@@ -738,7 +741,7 @@ Log.e(TAG,"重连 1");
     /* ---- BroadcastReceiver Handler ---- */
     private void registerReceiver() {
         if (mAdapterReceiver == null) {
-            Log.e(TAG,"registerReceiver");
+            Log.e(TAG, "registerReceiver");
             mAdapterReceiver = new BaseBtAdapterReceiver();
             IntentFilter intentFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
             intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
@@ -749,7 +752,7 @@ Log.e(TAG,"重连 1");
 
     private void unregisterReceiver() {
         if (mAdapterReceiver != null) {
-            Log.e(TAG,"unregisterReceiver");
+            Log.e(TAG, "unregisterReceiver");
 
             mContext.unregisterReceiver(mAdapterReceiver);
             mAdapterReceiver = null;
@@ -844,6 +847,7 @@ Log.e(TAG,"重连 1");
     private void stopChangeMtu() {
         mHandler.removeMessages(MSG_CHANGE_BLE_MTU_TIMEOUT);
     }
+
     //开始调整BLE协议MTU
     @SuppressLint("MissingPermission")
     private void startChangeMtu(BluetoothGatt gatt, int mtu) {
@@ -875,7 +879,6 @@ Log.e(TAG,"重连 1");
             handleBleConnectedEvent(device);
         }
     }
-
 
 
     private void handleBleConnectedEvent(final BluetoothDevice device) {
@@ -923,13 +926,15 @@ Log.e(TAG,"重连 1");
     };
 
     private BleConnectedCallBack bleConnectedCallBack;
+
     public void setOnConnectionUpdatedListener(BleConnectedCallBack listener) {
         this.bleConnectedCallBack = listener;
     }
+
     private final BluetoothGattCallback mBluetoothGattCallback = new BluetoothGattCallback() {
 
         public void onConnectionUpdated(BluetoothGatt gatt, int interval, int latency, int timeout, int status) {
-            if (null == gatt ) return;
+            if (null == gatt) return;
             BluetoothDevice device = gatt.getDevice();
             if (null == device) return;
             JL_Log.e(TAG, "onConnectionUpdated >>> device : " + device + ", interval : "
@@ -951,9 +956,9 @@ Log.e(TAG,"重连 1");
 
                 setConnectingBtDevice(null);
                 if (newState == BluetoothProfile.STATE_CONNECTED) {  //BLE连接成功
-                    Log.e(TAG,"连接成功!!!!!!!!!!!!");
+                    Log.e(TAG, "连接成功!!!!!!!!!!!!");
 
-                    isConnected=true;
+                    isConnected = true;
                     mRetryConnectCount = 0;
                     boolean ret = gatt.discoverServices();
                     JL_Log.d(TAG, "onConnectionStateChange >> discoverServices : " + ret);
@@ -1001,7 +1006,7 @@ Log.e(TAG,"重连 1");
             boolean ret = false;
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 AppUtil.printBleGattServices(mContext, device, gatt, status);
-                Log.e(TAG,"onServicesDiscovered type = "+device.getType()) ;
+                Log.e(TAG, "onServicesDiscovered type = " + device.getType());
                 for (BluetoothGattService service : gatt.getServices()) {
                     if (BLE_UUID_SERVICE.equals(service.getUuid()) && null != service.getCharacteristic(BLE_UUID_WRITE)
                             && null != service.getCharacteristic(BLE_UUID_NOTIFICATION)) {
@@ -1018,7 +1023,7 @@ Log.e(TAG,"重连 1");
 
             }
             JL_Log.i(TAG, "onServicesDiscovered : " + ret);
-            if(bleConnectedCallBack!=null){
+            if (bleConnectedCallBack != null) {
                 bleConnectedCallBack.onConnectedCB(true);
             }
 
@@ -1065,15 +1070,15 @@ Log.e(TAG,"重连 1");
         @SuppressLint("MissingPermission")
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            Log.e(TAG,"onDescriptorWrite gatt="+gatt+",descriptor=="+descriptor+",status=="+status);
+            Log.e(TAG, "onDescriptorWrite gatt=" + gatt + ",descriptor==" + descriptor + ",status==" + status);
 
-            Log.e(TAG,"onDescriptorWrite 1");
+            Log.e(TAG, "onDescriptorWrite 1");
             if (null == gatt || !AppUtil.checkHasConnectPermission(mContext)) return;
-            Log.e(TAG,"onDescriptorWrite 2");
+            Log.e(TAG, "onDescriptorWrite 2");
 
             BluetoothDevice device = gatt.getDevice();
             if (null == device || null == descriptor) return;
-            Log.e(TAG,"onDescriptorWrite 3");
+            Log.e(TAG, "onDescriptorWrite 3");
 
             UUID serviceUuid = null;
             UUID characteristicUuid = null;
@@ -1101,7 +1106,7 @@ Log.e(TAG,"重连 1");
                         requestMTU = 509;
                     }
                     startChangeMtu(gatt, requestMTU);
-                    Log.e(TAG,"run handleBleConnectedEvent 2");
+                    Log.e(TAG, "run handleBleConnectedEvent 2");
 
 //                    handleBleConnectedEvent(device);
                 } else {
@@ -1134,7 +1139,7 @@ Log.e(TAG,"重连 1");
 
                     bleDevice.setMtu(bleMtu);
                     JL_Log.i(TAG, "-onMtuChanged- handleBleConnectedEvent");
-                    Log.e(TAG,"run handleBleConnectedEvent 3");
+                    Log.e(TAG, "run handleBleConnectedEvent 3");
 
                     handleBleConnectedEvent(device);
                 }

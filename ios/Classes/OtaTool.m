@@ -145,7 +145,7 @@ static OtaTool *sharedInstance = nil;
 - (void)otaProgressWithOtaResult:(JL_OTAResult)result withProgress:(float)progress {
     if (self.otaProgressCallback) {
         NSInteger intProgress = (NSInteger)(progress * 100);
-        NSString * stat  us = [self statusStringForResult:result];
+        NSString * status = [self statusStringForResult:result];
 
         switch (result) {
             case JL_OTAResultPreparing:
