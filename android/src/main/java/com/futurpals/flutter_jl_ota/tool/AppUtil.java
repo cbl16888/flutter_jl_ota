@@ -139,6 +139,7 @@ public class AppUtil {
 
     private static long theLastClickTime = 0;
     private static int theClickCount = 0;
+
     public static boolean isFastContinuousClick(long interval, int times) {
         long currentTime = new Date().getTime();
         if (currentTime - theLastClickTime <= interval) {
@@ -233,9 +234,9 @@ public class AppUtil {
         return device.getType();
     }
 
-    public static String printBtDeviceInfo(BluetoothDevice device) {
-        return BluetoothUtil.printBtDeviceInfo(FlutterJlOtaPlugin.getInstance().getContext(), device);
-    }
+//    public static String printBtDeviceInfo(BluetoothDevice device) {
+//        return BluetoothUtil.printBtDeviceInfo(FlutterJlOtaPlugin.getInstance().getContext(), device);
+//    }
 
     /**
      * 打印BLE的GATT服务信息
@@ -305,7 +306,6 @@ public class AppUtil {
         }
         return changeStatus;
     }
-
 
 
 }

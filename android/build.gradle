@@ -5,9 +5,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        flatDir {
-            dirs 'libs' // 指向本地 libs 目录
-        }
     }
 
     dependencies {
@@ -15,10 +12,25 @@ buildscript {
     }
 }
 
+def getCurrentProjectDir() {
+    String result = ""
+    rootProject.allprojects { project ->
+        if (project.properties.get("identityPath").toString() == ":flutter_jl_ota") {
+            result = project.properties.get("projectDir").toString()
+        }
+    }
+    return result
+}
+
 rootProject.allprojects {
+    def dir = getCurrentProjectDir()
     repositories {
         google()
         mavenCentral()
+        maven { url uri('./repository') }
+        maven {
+            url uri("$dir/repository")
+        }
     }
 }
 
@@ -48,11 +60,11 @@ android {
     def flutterRoot = localProperties.getProperty('flutter.sdk')
 
     dependencies {
-        implementation fileTree(dir: 'libs', include: ['*.aar'])
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.mockito:mockito-core:5.2.0")
         implementation 'androidx.annotation:annotation:1.9.1'
         implementation 'androidx.appcompat:appcompat:1.7.0'
+        implementation 'com.jl:jl-bt-ota:1.9.2'
         compileOnly files("$flutterRoot/bin/cache/artifacts/engine/android-arm/flutter.jar")
     }
 
