@@ -33,3 +33,7 @@
 ## 0.0.9
 
 - Fix Android Code
+
+## 0.1.0
+
+- Android Upgrade Test Successful
