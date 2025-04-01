@@ -1,12 +1,8 @@
 import 'ota_service.dart';
 
 class FlutterJlOta {
-  // Future<String?> getPlatformVersion() {
-  //   return FlutterJlOtaPlatform.instance.getPlatformVersion();
-  // }
-
   ///  开始扫描设备
-  Future<bool> startScan() async {
+  static Future<bool> startScan() async {
     return OtaService.startScan();
   }
 

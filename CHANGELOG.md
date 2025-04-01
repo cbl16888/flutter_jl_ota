@@ -37,3 +37,7 @@
 ## 0.1.0
 
 - Android Upgrade Test Successful
+
+## 0.1.1
+
+- Clean project

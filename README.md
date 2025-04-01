@@ -30,7 +30,7 @@
 
 ```yaml
 dependencies:
-  flutter_jl_ota: ^0.0.9
+  flutter_jl_ota: ^0.1.1
 ```
 
 ## 例子
