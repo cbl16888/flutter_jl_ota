@@ -3,10 +3,10 @@
   <groupId>com.jl</groupId>
   <artifactId>jl-bt-ota</artifactId>
   <versioning>
-    <release>1.9.2</release>
+    <release>1.10.0</release>
     <versions>
-      <version>1.9.2</version>
+      <version>1.10.0</version>
     </versions>
-    <lastUpdated>20250331024828</lastUpdated>
+    <lastUpdated>20250722111616</lastUpdated>
   </versioning>
 </metadata>

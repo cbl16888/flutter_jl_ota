@@ -64,7 +64,7 @@ android {
         testImplementation("org.mockito:mockito-core:5.2.0")
         implementation 'androidx.annotation:annotation:1.9.1'
         implementation 'androidx.appcompat:appcompat:1.7.0'
-        implementation 'com.jl:jl-bt-ota:1.9.2'
+        implementation 'com.jl:jl-bt-ota:1.10.0'
         compileOnly files("$flutterRoot/bin/cache/artifacts/engine/android-arm/flutter.jar")
     }
 

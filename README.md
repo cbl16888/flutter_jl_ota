@@ -18,7 +18,7 @@
 
 与最新的JL OTA插件包集成
 
-* 安卓 SDK V1.9.2
+* 安卓 SDK V1.10.0
 * IOS SDK V2.3.1
 
 [Android杰理官方github仓库地址](https://github.com/Jieli-Tech/Android-JL_OTA)

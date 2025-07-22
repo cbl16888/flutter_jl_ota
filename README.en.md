@@ -18,7 +18,7 @@ Android and iOS platforms with progress callbacks and error handling.
 
 Integrated with the latest JL OTA plugin package
 
-* Android SDK V1.9.2
+* Android SDK V1.10.0
 * IOS SDK V2.3.1
 
 [Jieli OTA Android Official GitHub repository](https://github.com/Jieli-Tech/Android-JL_OTA)
