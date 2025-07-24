@@ -25,6 +25,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // String _platformVersion = 'Unknown';
   final otaPlugin = FlutterJlOta();
+  int progress = 0;
+  String status = "--";
 
   @override
   void initState() {
@@ -46,7 +48,7 @@ class _MyAppState extends State<MyApp> {
   void startOta() async {
     String deviceUuid = '2B3681AF-B077-297D-D291-FA4A908CE06A'; // 替换为实际 UUID
     if (Platform.isAndroid) {
-      deviceUuid = "C9:EB:4B:A8:52:92";
+      deviceUuid = "38:91:65:21:3A:31";
     }
     print("flutter_ota_log => ${'startOta 执行了'}");
     String ufwPath = await moveFileToLib();
@@ -55,6 +57,10 @@ class _MyAppState extends State<MyApp> {
     // 监听进度和状态
     OtaService.listenToOtaProgress((progress, status) {
       print('OTA Progress: $progress%, Status: $status');
+      setState(() {
+        this.progress = progress;
+        this.status = status;
+      });
       if (status == 'Failed' || status == 'Success') {
         // 可选择取消监听或执行其他逻辑
       }
@@ -97,7 +103,9 @@ class _MyAppState extends State<MyApp> {
                 },
                 child: const Text("upgrade"),
               ),
-            )
+            ),
+            const SizedBox(height: 20,),
+            Text("$status:   $progress%")
           ],
         ),
       ),
