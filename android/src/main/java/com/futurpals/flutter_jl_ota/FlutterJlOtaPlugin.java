@@ -9,7 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.futurpals.flutter_jl_ota.tool.ConfigHelper;
+import com.futurpals.flutter_jl_ota.otasdk.tool.ota.OTAManager;
 import com.jieli.jl_bt_ota.constant.StateCode;
 import com.jieli.jl_bt_ota.interfaces.BtEventCallback;
 import com.jieli.jl_bt_ota.interfaces.IActionCallback;
@@ -30,6 +30,12 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
+import com.futurpals.flutter_jl_ota.otasdk.tool.config.ConfigHelper;
+import com.futurpals.flutter_jl_ota.otasdk.tool.file.FileManager;
+import com.futurpals.flutter_jl_ota.otasdk.tool.ota.ble.BleManager;
+import com.futurpals.flutter_jl_ota.otasdk.tool.ota.spp.SppManager;
+import com.futurpals.flutter_jl_ota.otasdk.util.AppUtil;
+
 /**
  * FlutterJlOtaPlugin
  * 改进后的 Flutter 插件，提供完整的 OTA 功能
@@ -39,7 +45,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
     private MethodChannel channel;
     private Context context;
     private Activity activity;
-    private OtaManager otaManager;
+    private OTAManager otaManager;
     public int connectedCounts = 0;
 
     @Override
@@ -47,7 +53,13 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_jl_ota");
         channel.setMethodCallHandler(this);
         context = flutterPluginBinding.getApplicationContext();
-        ConfigHelper.initialize(context); // 初始化 ConfigHelper
+        
+        // 初始化所有需要Context的工具类
+        ConfigHelper.initialize(context);
+        FileManager.initialize(context);
+        BleManager.initialize(context);
+        SppManager.initialize(context);
+        AppUtil.initialize(context);
     }
 
     @Override
@@ -94,7 +106,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
                 break;
 
             case "startScan":
-                initOtaManagerIfNeeded("", ""); // 初始化时无需特定 UUID 和名称
+                initOtaManagerIfNeeded(); // 初始化时无需特定 UUID 和名称
                 otaManager.startLeScan(20 * 1000L); // 20秒超时
                 result.success(true);
                 break;
@@ -103,7 +115,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
                 String uuid = call.argument("uuid");
                 String deviceName = call.argument("deviceName");
                 if (uuid != null && !uuid.isEmpty()) {
-                    initOtaManagerIfNeeded(uuid, deviceName != null ? deviceName : "");
+                    initOtaManagerIfNeeded();
                     BluetoothDevice device = getBluetoothDeviceById(uuid);
                     if (device != null) {
                         otaManager.connectBluetoothDevice(device);
@@ -141,20 +153,20 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
                 String filePath = call.argument("filePath");
                 String otaDeviceName = call.argument("deviceName");
                 if (otaUuid != null && !otaUuid.isEmpty() && filePath != null && !filePath.isEmpty()) {
-                    initOtaManagerIfNeeded(otaUuid, otaDeviceName != null ? otaDeviceName : "");
-                    startOtaUpdate(otaUuid, filePath, result);
+                    initOtaManagerIfNeeded();
+                    startOtaUpdate(filePath, result);
                 } else {
                     result.error("INVALID_PARAMS", "UUID or filePath is invalid or empty", null);
                 }
                 break;
 
             case "cancelOtaUpdate":
-                if (otaManager == null) {
-                    result.error("NOT_INITIALIZED", "OTA manager not initialized", null);
-                    return;
+                if (otaManager != null && otaManager.isOTA()) {
+                    otaManager.cancelOTA();
+                    result.success(true);
+                } else {
+                    result.error("NO_OTA_IN_PROGRESS", "No OTA update in progress", null);
                 }
-                otaManager.cancelOTA();
-                result.success(true); // 双备份 OTA 支持取消
                 break;
 
             default:
@@ -164,16 +176,11 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
 
     // 初始化 OtaManager，如果尚未初始化或需要更新 UUID
-    private void initOtaManagerIfNeeded(String mac, String deviceName) {
+    private void initOtaManagerIfNeeded() {
         if (otaManager == null) {
-            otaManager = new OtaManager(context, mac, deviceName);
+            otaManager = new OTAManager(context);
             configureOtaManager();
-            Log.d(TAG, "OtaManager initialized with mac: " + mac);
-        } else if (!mac.isEmpty() && !otaManager.mac.equals(mac)) {
-            otaManager.release();
-            otaManager = new OtaManager(context, mac, deviceName);
-            configureOtaManager();
-            Log.d(TAG, "OtaManager reinitialized with new mac: " + mac);
+            Log.d(TAG, "OTAManager initialized");
         }
     }
 
@@ -192,46 +199,13 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
     }
 
     // 开始 OTA 升级
-    private void startOtaUpdate(String uuid, String filePath, Result result) {
-        otaManager.setOtaStatusCallback(new OtaStatusCallback() {
-            @Override
-            public void onCanStartOtaChanged(boolean canStartOta) {
-                if (canStartOta) {
-                    otaManager.registerBluetoothCallback(new BtEventCallback() {
-                        @Override
-                        public void onConnection(BluetoothDevice device, int status) {
-                            connectedCounts++;
-                            if (status == StateCode.CONNECTION_OK) {
-                                if (otaManager.isOTA()) return;
-                                Log.e(TAG, "start-> ota:" + device + ",status==" + status);
-
-                                if (connectedCounts >= 2) {
-                                    startOtaWithFile(filePath);
-                                }
-
-                                otaManager.queryMandatoryUpdate(new IActionCallback<>() {
-                                    @Override
-                                    public void onSuccess(TargetInfoResponse deviceInfo) {
-                                        Log.e("queryMandatoryUpdate", "强制升级 onSuccess");
-                                    }
-
-                                    @Override
-                                    public void onError(BaseError baseError) {
-                                        Log.e("queryMandatoryUpdate", "强制升级error->" + baseError);
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onError(BaseError error) {
-                            Log.e(TAG, "Bluetooth callback error: " + error.getMessage());
-                        }
-                    });
-                }
-            }
-        });
+    private void startOtaUpdate(String filePath, Result result) {
         result.success(true);
+        
+        // 延迟执行OTA升级，确保设备已连接
+        new android.os.Handler().postDelayed(() -> {
+            startOtaWithFile(filePath);
+        }, 1000);
     }
 
     private void startOtaWithFile(String filePath) {
@@ -249,7 +223,11 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
             public void onNeedReconnect(String addr, boolean isNewReconnectWay) {
                 if (otaManager.getBluetoothOption().isUseReconnect()) {
                     Log.d(TAG, "Reconnecting to: " + addr + ", new way: " + isNewReconnectWay);
-                    otaManager.reConnect(addr, isNewReconnectWay);
+                    // OTAManager没有reConnect方法，使用connectBluetoothDevice替代
+                    BluetoothDevice device = getBluetoothDeviceById(addr);
+                    if (device != null) {
+                        otaManager.connectBluetoothDevice(device);
+                    }
                 }
             }
 

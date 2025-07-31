@@ -78,3 +78,8 @@ android {
         }
     }
 }
+
+dependencies {
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation project(':permission_handler_android')
+}
