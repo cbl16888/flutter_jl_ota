@@ -33,7 +33,7 @@ public class BluetoothHelper {
     private static volatile BluetoothHelper instance;
 
     private final ConfigHelper configHelper = ConfigHelper.getInstance();
-    private final BleManager bleManager = BleManager.getInstance();
+    private final BleManager bleManager = BleManager.getInstance(null, null, null);
     private final SppManager sppManager = SppManager.getInstance();
     private final BTEventCbHelper btEventCbHelper = new BTEventCbHelper();
 
@@ -186,13 +186,13 @@ public class BluetoothHelper {
         }
     }
 
-    public BluetoothDevice getConnectingDevice() {
-        if (configHelper.isBleWay()) {
-            return bleManager.getConnectingDevice();
-        } else {
-            return sppManager.getConnectingSppDevice();
-        }
-    }
+//    public BluetoothDevice getConnectingDevice() {
+//        if (configHelper.isBleWay()) {
+//            return bleManager.getConnectingDevice();
+//        } else {
+//            return sppManager.getConnectingSppDevice();
+//        }
+//    }
 
     public BluetoothGatt getConnectedGatt() {
         if (configHelper.isBleWay()) {

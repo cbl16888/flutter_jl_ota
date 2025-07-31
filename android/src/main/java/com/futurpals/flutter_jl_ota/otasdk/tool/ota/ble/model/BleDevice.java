@@ -78,6 +78,11 @@ public class BleDevice {
         this(context, device, MAX_RETRY_CONNECT_COUNT);
     }
 
+    public BleDevice(@NonNull Context context, @NonNull BluetoothGatt gatt) {
+        this(context, gatt.getDevice(), MAX_RETRY_CONNECT_COUNT);
+        this.gatt = gatt;
+    }
+
     public BleDevice(@NonNull Context context, @NonNull BluetoothDevice device, int reconnectLimit) {
         this.context = context;
         this.device = device;
