@@ -10,10 +10,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.futurpals.flutter_jl_ota.otasdk.tool.config.ConfigHelper;
-import com.futurpals.flutter_jl_ota.otasdk.tool.file.FileManager;
-import com.futurpals.flutter_jl_ota.otasdk.tool.ota.ble.BleManager;
-import com.futurpals.flutter_jl_ota.otasdk.tool.ota.spp.SppManager;
-import com.futurpals.flutter_jl_ota.otasdk.util.AppUtil;
+//import com.futurpals.flutter_jl_ota.otasdk.tool.file.FileManager;
+//import com.futurpals.flutter_jl_ota.otasdk.tool.ota.ble.BleManager;
+//import com.futurpals.flutter_jl_ota.otasdk.tool.ota.spp.SppManager;
+//import com.futurpals.flutter_jl_ota.otasdk.util.AppUtil;
 import com.jieli.jl_bt_ota.constant.StateCode;
 import com.jieli.jl_bt_ota.interfaces.BtEventCallback;
 import com.jieli.jl_bt_ota.interfaces.IActionCallback;
@@ -53,10 +53,10 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
         context = flutterPluginBinding.getApplicationContext();
         // 初始化所有需要Context的工具类
         ConfigHelper.initialize(context);
-        FileManager.initialize(context);
+//        FileManager.initialize(context);
 //        BleManager.initialize(context);
-        SppManager.initialize(context);
-        AppUtil.initialize(context);
+//        SppManager.initialize(context);
+//        AppUtil.initialize(context);
     }
 
     @Override
@@ -184,16 +184,6 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
             configureOtaManager();
             Log.d(TAG, "OtaManager reinitialized with new mac: " + mac);
         } else {
-            BluetoothOTAConfigure config = BluetoothOTAConfigure.createDefault()
-                    .setPriority(BluetoothOTAConfigure.PREFER_BLE)
-                    .setUseAuthDevice(false)
-                    .setBleIntervalMs(500)
-                    .setTimeoutMs(3000)
-                    .setMtu(500)
-                    .setNeedChangeMtu(false)
-                    .setUseReconnect(true)
-                    .setFirmwareFilePath("");
-            otaManager.configure(config);
             otaManager.reConnect(mac, true);
         }
     }
@@ -287,6 +277,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
                 Log.d(TAG, "OTA completed");
                 invokeProgress(100, "COMPLETED");
                 otaManager.release();
+                otaManager = null;
             }
 
             @Override

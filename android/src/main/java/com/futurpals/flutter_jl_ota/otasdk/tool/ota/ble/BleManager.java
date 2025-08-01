@@ -110,7 +110,7 @@ public class BleManager {
     }
 
     private BaseBtAdapterReceiver mAdapterReceiver;
-    private final BluetoothAdapter mBluetoothAdapter;
+    private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBluetoothLeScanner;
 
 
@@ -260,17 +260,33 @@ public class BleManager {
         JL_Log.w(TAG, ">>>>>>>>>>>>>>BleManager destroy >>>>>>>>>>>>>>> ");
         unregisterReceiver();
 
+        // 断开所有蓝牙连接
         clearConnectedBleDevices();
 
+        // 停止扫描
         if (isBleScanning()) stopLeScan();
         isBleScanning(false);
         mDiscoveredBleDevices.clear();
 
-
+        // 释放回调管理器
         mCallbackManager.release();
+
+        // 清理所有待处理消息
         mHandler.removeCallbacksAndMessages(null);
-        mReConnectHelper.release();
+
+        // 释放重连助手
+        if (mReConnectHelper != null) {
+            mReConnectHelper.release();
+        }
+
+        // 清理蓝牙适配器引用
+        mBluetoothAdapter = null;
+
+        // 清理静态实例引用
         instance = null;
+
+        JL_Log.w(TAG, ">>>>>>>>>>>>>>BleManager destroy completed >>>>>>>>>>>>>>> ");
+
     }
 
     public void registerBleEventCallback(BleEventCallback callback) {
@@ -552,8 +568,8 @@ public class BleManager {
         if (bleDevice != null) {
             if (BluetoothUtil.isBluetoothEnable()) {
                 bleDevice.getGatt().disconnect();
-                bleDevice.getGatt().close();
                 AppUtil.refreshBleDeviceCache(mContext, bleDevice.getGatt()); //强制更新缓存
+                bleDevice.getGatt().close();
                 JL_Log.w(TAG, ">>>>>>>>>>>>>>BleManager refreshBleDeviceCache >>>>>>>>>>>>>>> ");
             }
         } else {
@@ -637,6 +653,7 @@ public class BleManager {
                 BleDevice bleDevice = clone.get(key);
                 if (null == bleDevice) continue;
                 bleDevice.getGatt().disconnect();
+                AppUtil.refreshBleDeviceCache(mContext, bleDevice.getGatt()); //强制更新缓存
                 bleDevice.getGatt().close();
             }
             mConnectedGattMap.clear();
@@ -1137,8 +1154,6 @@ public class BleManager {
                 // 需要减去3个字节的数据包头部信息
                 int bleMtu = mtu - 3;
                 if (bleDevice != null && mHandler.hasMessages(MSG_CHANGE_BLE_MTU_TIMEOUT)) { //调整MTU的回调
-
-
                     bleDevice.setMtu(bleMtu);
                     JL_Log.i(TAG, "-onMtuChanged- handleBleConnectedEvent");
                     Log.e(TAG, "run handleBleConnectedEvent 3");
@@ -1152,8 +1167,8 @@ public class BleManager {
     public void refreshBleDevice() {
         BluetoothGatt gatt = getConnectedBtGatt(mUsingDevice);
         gatt.disconnect();
-        gatt.close();
         AppUtil.refreshBleDeviceCache(mContext, gatt); //强制更新缓存
+        gatt.close();
         mReConnectHelper.release();
     }
 

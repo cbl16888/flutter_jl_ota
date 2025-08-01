@@ -73,6 +73,7 @@ public class ReConnectHelper {
         mBleAdvCache.clear();
         mUIHandler.removeCallbacksAndMessages(null);
         mBtManager.unregisterBleEventCallback(bleEventCallback);
+        removeParam(mBtManager.mac);
     }
 
     public boolean isReconnecting() {
