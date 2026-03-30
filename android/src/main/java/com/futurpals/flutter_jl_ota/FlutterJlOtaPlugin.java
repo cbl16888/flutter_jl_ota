@@ -44,6 +44,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
     private Context context;
     private Activity activity;
     private OtaManager otaManager;
+    private BtEventCallback mCurrentBtEventCallback = null; // 当前注册的蓝牙回调，防止重复注册
     public int connectedCounts = 0;
 
     @Override
@@ -81,10 +82,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-        if (otaManager != null) {
-            otaManager.release();
-            otaManager = null;
-        }
+        releaseOtaManager();
         channel.setMethodCallHandler(null);
     }
 
@@ -179,13 +177,12 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
             configureOtaManager();
             Log.d(TAG, "OtaManager initialized with mac: " + mac);
         } else if (!mac.isEmpty() && !otaManager.mac.equals(mac)) {
-            otaManager.release();
+            releaseOtaManager();
             otaManager = new OtaManager(context, mac, deviceName);
             configureOtaManager();
             Log.d(TAG, "OtaManager reinitialized with new mac: " + mac);
-        } else {
-            otaManager.reConnect(mac, true);
         }
+        // 注意：同 MAC 复用时不在此处调用 reConnect，避免在回调注册前提前触发连接
     }
 
     // 配置 OtaManager 的默认参数
@@ -204,11 +201,24 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
 
     // 开始 OTA 升级
     private void startOtaUpdate(String uuid, String filePath, Result result) {
+        // 每次开始新的 OTA 流程前，重置连接计数器，防止上次残留值导致逻辑错乱
+        connectedCounts = 0;
+
+        // 反注册上一次遗留的蓝牙回调，防止重复注册累积
+        if (mCurrentBtEventCallback != null) {
+            otaManager.unregisterBluetoothCallback(mCurrentBtEventCallback);
+            mCurrentBtEventCallback = null;
+        }
+
         otaManager.setOtaStatusCallback(new OtaStatusCallback() {
             @Override
             public void onCanStartOtaChanged(boolean canStartOta) {
                 if (canStartOta) {
-                    otaManager.registerBluetoothCallback(new BtEventCallback() {
+                    // 防止重复注册：先反注册旧的回调
+                    if (mCurrentBtEventCallback != null) {
+                        otaManager.unregisterBluetoothCallback(mCurrentBtEventCallback);
+                    }
+                    mCurrentBtEventCallback = new BtEventCallback() {
                         @Override
                         public void onConnection(BluetoothDevice device, int status) {
                             connectedCounts++;
@@ -238,7 +248,8 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
                         public void onError(BaseError error) {
                             Log.e(TAG, "Bluetooth callback error: " + error.getMessage());
                         }
-                    });
+                    };
+                    otaManager.registerBluetoothCallback(mCurrentBtEventCallback);
                 }
             }
         });
@@ -276,25 +287,36 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
             public void onStopOTA() {
                 Log.d(TAG, "OTA completed");
                 invokeProgress(100, "COMPLETED");
-                otaManager.release();
-                otaManager = null;
+                releaseOtaManager();
             }
 
             @Override
             public void onCancelOTA() {
                 Log.d(TAG, "OTA canceled");
-                if (otaManager.isOTA()) {
-                    otaManager.cancelOTA();
-                }
+                // 注意：此处是取消的回调，不应再次调用 cancelOTA() 以免递归
                 invokeProgress(0, "CANCELED");
+                releaseOtaManager();
             }
 
             @Override
             public void onError(BaseError error) {
                 Log.e(TAG, "OTA error: " + error.getMessage());
                 invokeProgress(0, "ERROR: " + error.getMessage());
+                releaseOtaManager();
             }
         });
+    }
+
+    /**
+     * 统一释放 OTA 资源，确保 otaManager、mCurrentBtEventCallback 和 connectedCounts 都被正确清理
+     */
+    private void releaseOtaManager() {
+        mCurrentBtEventCallback = null;
+        connectedCounts = 0;
+        if (otaManager != null) {
+            otaManager.release();
+            otaManager = null;
+        }
     }
 
 
