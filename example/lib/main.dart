@@ -45,13 +45,14 @@ class _MyAppState extends State<MyApp> {
     ], onAllowed: (result) async {});
   }
 
-  void startOta() async {
-    String deviceUuid = '2B3681AF-B077-297D-D291-FA4A908CE06A'; // 替换为实际 UUID
+  void startOta({bool isUpdate = true}) async {
+    String deviceUuid = '680CD9BA-5C9B-4198-8FA5-0D35B7D2262F'; // 替换为实际 UUID
     if (Platform.isAndroid) {
-      deviceUuid = "38:91:65:21:3A:31";
+      deviceUuid = "93:71:6C:2E:2E:2B";
     }
     print("flutter_ota_log => ${'startOta 执行了'}");
-    String ufwPath = await moveFileToLib();
+    var fileName = isUpdate ? 'update_bf_ptt_v1.0.5.ufw' : 'update_bf_ptt_v1.0.4.ufw';
+    String ufwPath = await moveFileToLib(fileName);
     await OtaService.startOtaUpdate(deviceUuid, ufwPath);
 
     // 监听进度和状态
@@ -68,9 +69,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// 调试用
-  static moveFileToLib() async {
-    String fileName = 'update.ufw';
-
+  static moveFileToLib(String fileName) async {
     String filePath = 'assets/$fileName';
     final ByteData data = await rootBundle.load(filePath);
     final List<int> bytes =
@@ -102,6 +101,15 @@ class _MyAppState extends State<MyApp> {
                   startOta();
                 },
                 child: const Text("upgrade"),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  startOta(isUpdate: false);
+                },
+                child: const Text("downgrade"),
               ),
             ),
             const SizedBox(height: 20,),

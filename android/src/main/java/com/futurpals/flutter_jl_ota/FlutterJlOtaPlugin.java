@@ -230,7 +230,7 @@ public class FlutterJlOtaPlugin implements FlutterPlugin, MethodCallHandler, Act
                                     startOtaWithFile(filePath);
                                 }
 
-                                otaManager.queryMandatoryUpdate(new IActionCallback<>() {
+                                otaManager.queryMandatoryUpdate(new IActionCallback<TargetInfoResponse>() {
                                     @Override
                                     public void onSuccess(TargetInfoResponse deviceInfo) {
                                         Log.e("queryMandatoryUpdate", "强制升级 onSuccess");

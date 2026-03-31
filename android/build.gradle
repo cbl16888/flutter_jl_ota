@@ -39,11 +39,11 @@ apply plugin: "com.android.library"
 android {
     namespace = "com.futurpals.flutter_jl_ota"
 
-    compileSdk = 35
+    compileSdk = 34
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
@@ -77,9 +77,4 @@ android {
             }
         }
     }
-}
-
-dependencies {
-    implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation project(':permission_handler_android')
 }
