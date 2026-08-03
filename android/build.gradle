@@ -3,12 +3,33 @@ version = "1.0"
 
 buildscript {
     repositories {
+        maven { url 'https://repo1.maven.org/maven2' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        maven { url 'https://mvn.mob.com/android' }
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url 'https://www.jitpack.io' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        maven { url 'https://mirrors.163.com/maven/repository/maven-public/' }
+        maven {
+            credentials {
+                username '614a8ddd89e55adfe515dbeb'
+                password 'W98IH)5sWliD'
+            }
+            url 'https://packages.aliyun.com/maven/repository/2139563-release-ywxakF/'
+        }
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.7.3")
+        classpath("com.android.tools.build:gradle:8.11.2")
     }
 }
 
@@ -25,6 +46,27 @@ def getCurrentProjectDir() {
 rootProject.allprojects {
     def dir = getCurrentProjectDir()
     repositories {
+        maven { url 'https://repo1.maven.org/maven2' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
+        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        maven { url 'https://mvn.mob.com/android' }
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url 'https://www.jitpack.io' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public/' }
+        maven { url 'https://mirrors.163.com/maven/repository/maven-public/' }
+        maven {
+            credentials {
+                username '614a8ddd89e55adfe515dbeb'
+                password 'W98IH)5sWliD'
+            }
+            url 'https://packages.aliyun.com/maven/repository/2139563-release-ywxakF/'
+        }
         google()
         mavenCentral()
         maven { url uri('./repository') }
@@ -46,6 +88,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     defaultConfig {
         minSdk = 21
     }
@@ -65,6 +111,7 @@ android {
         implementation 'androidx.annotation:annotation:1.9.1'
         implementation 'androidx.appcompat:appcompat:1.7.0'
         implementation 'com.jl:jl-bt-ota:1.10.0'
+        implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.12'
         compileOnly files("$flutterRoot/bin/cache/artifacts/engine/android-arm/flutter.jar")
     }
 

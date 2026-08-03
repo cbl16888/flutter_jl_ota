@@ -34,7 +34,7 @@ class FileTransferUtil {
          */
         fun getNewUpgradeFileName(oldFileName: String, parent: File): String {
             var result = "upgrade.ufw"
-            if (oldFileName.toUpperCase().endsWith(".UFW")) {//文件名后缀以ufw结尾
+            if (oldFileName.uppercase().endsWith(".UFW")) {//文件名后缀以ufw结尾
                 result = oldFileName
             }// 。说明可能是别的App加密混淆文件名
             var tempResult = result
